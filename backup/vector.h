@@ -7,9 +7,4 @@ extern vector3 *hVel, *d_hVel;
 extern vector3 *hPos, *d_hPos;
 extern double *mass;
 
-extern vector3  *dVel;
-extern vector3  *dPos;
-extern double  *dMass;
-extern vector3 *dAccels;
-
 #endif

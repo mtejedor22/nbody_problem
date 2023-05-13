@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "vector.h"
@@ -60,27 +61,7 @@ __global__ void sum_rows(vector3* accels, double* mass, vector3* vel, vector3* p
 
 //compute: Updates the positions and locations of the objects in the system based on gravity using CUDA
 void compute() {
-    vector3* dPos;
-    double* dMass;
-    vector3* dAccels;
-    vector3* dVel;
 
-    vector3* hPos;
-    vector3* mass;
-    vector3* hVel;
-
-    cudaMalloc((void**)&dPos, sizeof(vector3)*NUMENTITIES);
-    cudaMalloc((void**)&dMass, sizeof(double)*NUMENTITIES);
-    cudaMalloc((void**)&dAccels, sizeof(vector3)*NUMENTITIES*NUMENTITIES);
-    cudaMalloc((void**)&dVel, sizeof(vector3)*NUMENTITIES);
-
-    cudaMalloc((void**)&hPos, sizeof(vector3)*NUMENTITIES);
-    cudaMalloc((void**)&mass, sizeof(double)*NUMENTITIES);
-    cudaMalloc((void**)&hVel, sizeof(vector3)*NUMENTITIES);
-
-    cudaMemcpy(dPos, hPos, sizeof(vector3)*NUMENTITIES, cudaMemcpyHostToDevice);
-    cudaMemcpy(dMass, mass, sizeof(double)*NUMENTITIES, cudaMemcpyHostToDevice);
-    cudaMemcpy(dVel, hVel,sizeof(vector3)*NUMENTITIES,cudaMemcpyHostToDevice);
 
     dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
     dim3 dimGrid((NUMENTITIES+BLOCK_SIZE-1)/BLOCK_SIZE, (NUMENTITIES+BLOCK_SIZE-1)/BLOCK_SIZE);
@@ -90,14 +71,5 @@ void compute() {
 
     cudaMemcpy(hPos, dPos, sizeof(vector3)*NUMENTITIES, cudaMemcpyDeviceToHost);
     cudaMemcpy(hVel, dVel, sizeof(vector3)*NUMENTITIES, cudaMemcpyDeviceToHost);
-    //cudaMemcpy(hVel, dVel, sizeof(vector3)*NUMENTITIES, cudaMemcpyDeviceToHost);
 
-    cudaFree(dPos);
-    cudaFree(dMass);
-    cudaFree(dAccels);
-    cudaFree(dVel);
-
-    cudaFree(hPos);
-    cudaFree(mass);
-    cudaFree(hVel);
 }

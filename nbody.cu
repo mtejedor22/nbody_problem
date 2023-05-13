@@ -12,6 +12,11 @@ vector3 *hVel, *d_hVel;
 vector3 *hPos, *d_hPos;
 double *mass;
 
+    vector3* dPos;
+    double* dMass;
+    vector3* dAccels;
+    vector3* dVel;
+
 //initHostMemory: Create storage for numObjects entities in our system
 //Parameters: numObjects: number of objects to allocate
 //Returns: None
@@ -102,6 +107,16 @@ int main(int argc, char **argv)
         #ifdef DEBUG
         printSystem(stdout);
         #endif
+
+        cudaMalloc((void**)&dPos, sizeof(vector3)*NUMENTITIES);
+        cudaMalloc((void**)&dMass, sizeof(double)*NUMENTITIES);
+        cudaMalloc((void**)&dAccels, sizeof(vector3)*NUMENTITIES*NUMENTITIES);
+        cudaMalloc((void**)&dVel, sizeof(vector3)*NUMENTITIES);
+
+        cudaMemcpy(dPos, hPos, sizeof(vector3)*NUMENTITIES, cudaMemcpyHostToDevice);
+        cudaMemcpy(dMass, mass, sizeof(double)*NUMENTITIES, cudaMemcpyHostToDevice);
+        cudaMemcpy(dVel, hVel,sizeof(vector3)*NUMENTITIES,cudaMemcpyHostToDevice);
+
         for (t_now=0;t_now<DURATION;t_now+=INTERVAL){
                 compute();
         }
@@ -112,4 +127,8 @@ int main(int argc, char **argv)
         printf("This took a total time of %f seconds\n",(double)t1/CLOCKS_PER_SEC);
 
         freeHostMemory();
+         cudaFree(dPos);
+        cudaFree(dMass);
+        cudaFree(dAccels);
+        cudaFree(dVel);
 }
